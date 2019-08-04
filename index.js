@@ -1,17 +1,12 @@
-async function loadData(setName) {
-  var data = await d3.csv(`${setName}.csv`);
-  return data.map(d => ({"Time": new Date(d.Updated), "Delay": d.Flow-0}))
-}
-
-async function test() {
-  await drawMap();
-  var data = await loadData("Prescott");
-  window.data = data;
-  drawCalendar(data);
-  var dayData = filterDate(data, new Date("2013-05-21"));
-  window.dayData = dayData;
-  dailyPlot(dayData);
-}
+//async function test() {
+//  await drawMap();
+//  var data = await loadData("Prescott");
+//  window.data = data;
+//  drawCalendar(data);
+//  var dayData = filterDate(data, new Date("2013-05-21"));
+//  window.dayData = dayData;
+//  dailyPlot(dayData);
+//}
 
 async function drawMap() {
     var documentFragment = await d3.xml("Map_of_USA_States_with_names_white.svg");
@@ -32,8 +27,19 @@ async function drawMap() {
         .attr("cx", d=>d[1][0])
         .attr("cy", d=>d[1][1])
         .attr("r", 5)
+        .on("click", d=>{
+            loadData(d[0]).then(caldata=>{
+                drawCalendar(caldata);
+            })
+        })
+      .raise()
       .append("title")
         .text(d=>d[0])
+}
+
+async function loadData(setName) {
+  var data = await d3.csv(`${setName}.csv`);
+  return data.map(d => ({"Time": new Date(d.Updated), "Delay": d.Flow-0}))
 }
 
 function drawCalendar(data){
@@ -69,7 +75,7 @@ function drawCalendar(data){
     .object(data);
   window.years = years;
 
-  const svg = d3.select("#calendar");
+  const svg = d3.select("#calendar").html("");
 
   const year = svg.selectAll("g")
     .data(Object.keys(years))
