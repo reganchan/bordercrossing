@@ -4,12 +4,36 @@ async function loadData(setName) {
 }
 
 async function test() {
+  await drawMap();
   var data = await loadData("Prescott");
   window.data = data;
   drawCalendar(data);
   var dayData = filterDate(data, new Date("2013-05-21"));
   window.dayData = dayData;
   dailyPlot(dayData);
+}
+
+async function drawMap() {
+    var documentFragment = await d3.xml("Map_of_USA_States_with_names_white.svg");
+    var svgNode = documentFragment.getElementsByTagName("svg")[0];
+    //use plain Javascript to extract the node
+
+    var div = d3.select("#usaMap").node();
+    div.appendChild(svgNode);
+    //d3's selection.node() returns the DOM node, so we
+    //can use plain Javascript to append content
+
+    var cbsa = await d3.json("cbsa.json");
+    var data = Object.entries(cbsa).map(kv=>([kv[0], d3.geoAlbersUsa()(kv[1])]));
+    d3.select("#usaMap svg")
+      .selectAll("circle")
+      .data(data)
+      .join("circle")
+        .attr("cx", d=>d[1][0])
+        .attr("cy", d=>d[1][1])
+        .attr("r", 5)
+      .append("title")
+        .text(d=>d[0])
 }
 
 function drawCalendar(data){
