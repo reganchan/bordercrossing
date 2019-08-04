@@ -28,11 +28,18 @@ async function drawMap() {
         .attr("cy", d=>d[1][1])
         .attr("r", 5)
         .on("click", d=>{
+            d3.selectAll(".cbsa_name").text(d[0]);
             loadData(d[0]).then(caldata=>{
                 drawCalendar(caldata);
             })
         })
       .raise()
+      .on("mouseover", function(d){
+        d3.select(this).attr("r", 10)
+      })
+      .on("mouseout", function(d){
+        d3.select(this).attr("r", 5)
+      })
       .append("title")
         .text(d=>d[0])
 }
@@ -137,6 +144,8 @@ function drawCalendar(data){
       .attr("x", d => timeWeek.count(d3.timeYear(d), timeWeek.ceil(d)) * cellSize + 2)
       .attr("y", -5)
       .text(formatMonth);
+
+  d3.select("#calendarView").classed("d-none", false).node().scrollIntoView();
 }
 
 function dailyPlot(dayData){
@@ -213,6 +222,8 @@ function dailyPlot(dayData){
       .duration(2000)
       .ease(d3.easeLinear)
       .attr("stroke-dashoffset", 0);
+
+  d3.select("#plotView").classed("d-none", false).node().scrollIntoView();
 }
 
 function filterDate(data, date){
