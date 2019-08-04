@@ -197,9 +197,9 @@ function dailyPlot(dayData){
           .style("top", (d3.event.pageY - 28) + "px");
         div.style("opacity", .9);
       })
-//      .on("mouseout", function(d) {
-//        div.style("opacity", 0);
-//      })
+      .on("mouseout", function(d) {
+        div.style("opacity", 0);
+      })
     .transition()
       .duration(2000)
       .attr("cy", d => y(d.Delay))
